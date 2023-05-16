@@ -1,5 +1,5 @@
 import {Client} from 'pg'
-import {columns, database, host, password, port, table, user} from "../src/args"
+import {columns, database, host, password, port, table, user} from "../src/config"
 import {expect} from "chai"
 import {PgTransport} from "../src"
 
