@@ -2,17 +2,17 @@ import {Client} from 'pg'
 import split from 'split2'
 import {pipeline, Transform, TransformCallback} from 'stream'
 
-import {columns, connUrl, encoding, params, table} from './config'
+import {columns, Columns, connUrl, DEFAULT_DB_COLUMNS, encoding, table} from './config'
 
 export class PgTransport extends Transform {
     private client: any
     private readonly table: string
-    private readonly columns: string
+    private readonly columns: Columns
 
-    constructor(table: string, columns: string[], client: Client) {
+    constructor(table: string, columns: Record<string, string>, client: Client) {
         super()
         this.table = table
-        this.columns = columns.join(', ')
+        this.columns = new Columns(columns || DEFAULT_DB_COLUMNS)
         this.client = client
 
         process.on('SIGINT', () => this._shutdown())
@@ -34,18 +34,19 @@ export class PgTransport extends Transform {
             //pass it through non-json.
             return callback(null, `${chunk}\n`)
         }
-        const query = `INSERT INTO ${this.table} (${this.columns})
-                       VALUES (${params});`
+        const query = `INSERT INTO ${this.table} (${this.columns.toString})
+                       VALUES (${this.columns.toParams});`
         this.client.query(
             query,
             log,
             (err: Error) => {
+                console.log(err)
                 callback(err, null)
             })
     }
 }
 
-function transporter(table: string, columns: string[], client: Client) {
+function transporter(table: string, columns: Record<string, string>, client: Client) {
     const pgTransport = new PgTransport(table, columns, client)
     pgTransport.on('end', () => {
         client.end().catch(e => {

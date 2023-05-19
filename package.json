@@ -23,7 +23,7 @@
     "postgresql",
     "transport"
   ],
-  "author": "Original: Xavier Stouder <xavier@stouder.io>",
+  "author": "Vlad Blindu",
   "license": "UNLICENCED",
   "types": "dist/index.d.ts",
   "files": [
@@ -54,5 +54,5 @@
     "ts-node": "^10.2.1",
     "typescript": "^4.3.5"
   },
-  "repository": ""
+  "repository": "https://github.com/vladblindu/pino-pg.git"
 }
